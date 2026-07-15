@@ -508,6 +508,22 @@ func (n *terraformPluginSDKExternal) Observe(ctx context.Context, mg xpresource.
 	n.opTracker.SetTfState(newState) // TODO: missing RawConfig & RawPlan here...
 	resourceExists := newState != nil && newState.ID != ""
 
+	// If the managed resource has an external-name annotation set, the
+	// resource was imported or already exists externally. Even if
+	// RefreshWithoutUpgrade couldn't find it (e.g., due to format
+	// differences or temporary API issues), we should treat it as
+	// existing to avoid attempting to create a duplicate resource.
+	if !resourceExists && meta.GetExternalName(mg) != "" {
+		n.logger.Debug("Resource has external-name annotation, treating as existing even though RefreshWithoutUpgrade did not find it")
+		// Use the pre-refresh state as the observed state. This state
+		// was reconstructed from the spec parameters and has the
+		// external-name as its ID.
+		newState = diffState
+		resourceExists = newState != nil && newState.ID != ""
+		// Save the reconstructed state so it persists across reconciliations.
+		n.opTracker.SetTfState(diffState)
+	}
+
 	var stateValueMap map[string]any
 	if resourceExists {
 		jsonMap, stateValue, err := n.fromInstanceStateToJSONMap(newState)
@@ -650,6 +666,14 @@ func (n *terraformPluginSDKExternal) setExternalName(mg xpresource.Managed, stat
 
 func (n *terraformPluginSDKExternal) Create(ctx context.Context, mg xpresource.Managed) (managed.ExternalCreation, error) { //nolint:gocyclo // easier to follow as a unit
 	n.logger.Debug("Creating the external resource")
+	// If the managed resource already has an external-name annotation set,
+	// it means the external resource already exists (e.g., was imported).
+	// Skip the Create to avoid attempting to create a duplicate resource.
+	if meta.GetExternalName(mg) != "" {
+		n.logger.Debug("Resource already has an external-name, skipping create")
+		return managed.ExternalCreation{}, nil
+	}
+
 	start := time.Now()
 	newState, diag := n.resourceSchema.Apply(ctx, n.opTracker.GetTfState(), n.instanceDiff, n.ts.Meta)
 	metrics.ExternalAPITime.WithLabelValues("create").Observe(time.Since(start).Seconds())
