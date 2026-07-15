@@ -13,7 +13,7 @@ import (
 	schemav2 "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/upbound/uptest/pkg/crdschema"
 
-	"github.com/HolyBitsLLC/upjet/v2/pkg/config/conversion"
+	"github.com/crossplane/upjet/v2/pkg/config/conversion"
 )
 
 // RegisterAutoConversions automatically registers conversion functions

@@ -10,7 +10,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"k8s.io/utils/ptr"
 
-	"github.com/HolyBitsLLC/upjet/v2/pkg/config"
+	"github.com/crossplane/upjet/v2/pkg/config"
 )
 
 func TestServerSideApplyOptions(t *testing.T) {

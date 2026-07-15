@@ -54,8 +54,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/conversion"
 	"sigs.k8s.io/randfill"
 
-	"github.com/HolyBitsLLC/upjet/v2/pkg/config"
-	ujconversion "github.com/HolyBitsLLC/upjet/v2/pkg/controller/conversion"
+	"github.com/crossplane/upjet/v2/pkg/config"
+	ujconversion "github.com/crossplane/upjet/v2/pkg/controller/conversion"
 )
 
 const (

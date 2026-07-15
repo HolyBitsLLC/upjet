@@ -15,9 +15,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 
-	"github.com/HolyBitsLLC/upjet/v2/pkg/config"
-	ujconversion "github.com/HolyBitsLLC/upjet/v2/pkg/controller/conversion"
-	"github.com/HolyBitsLLC/upjet/v2/pkg/resource/fake"
+	"github.com/crossplane/upjet/v2/pkg/config"
+	ujconversion "github.com/crossplane/upjet/v2/pkg/controller/conversion"
+	"github.com/crossplane/upjet/v2/pkg/resource/fake"
 )
 
 const (

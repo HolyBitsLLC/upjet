@@ -14,7 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 	"github.com/pkg/errors"
 
-	"github.com/HolyBitsLLC/upjet/v2/pkg/config/conversion"
+	"github.com/crossplane/upjet/v2/pkg/config/conversion"
 )
 
 // Mode denotes the mode of the runtime Terraform conversion, e.g.,

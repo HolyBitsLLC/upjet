@@ -22,11 +22,11 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/HolyBitsLLC/upjet/v2/pkg/config"
-	"github.com/HolyBitsLLC/upjet/v2/pkg/resource"
-	"github.com/HolyBitsLLC/upjet/v2/pkg/resource/fake"
-	"github.com/HolyBitsLLC/upjet/v2/pkg/resource/json"
-	"github.com/HolyBitsLLC/upjet/v2/pkg/terraform"
+	"github.com/crossplane/upjet/v2/pkg/config"
+	"github.com/crossplane/upjet/v2/pkg/resource"
+	"github.com/crossplane/upjet/v2/pkg/resource/fake"
+	"github.com/crossplane/upjet/v2/pkg/resource/json"
+	"github.com/crossplane/upjet/v2/pkg/terraform"
 )
 
 const (
