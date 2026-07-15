@@ -26,10 +26,10 @@ import (
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/crossplane/upjet/v2/pkg/config/conversion"
-	"github.com/crossplane/upjet/v2/pkg/registry"
-	"github.com/crossplane/upjet/v2/pkg/types/markers/kubebuilder"
-	"github.com/crossplane/upjet/v2/pkg/types/structtag"
+	"github.com/HolyBitsLLC/upjet/v2/pkg/config/conversion"
+	"github.com/HolyBitsLLC/upjet/v2/pkg/registry"
+	"github.com/HolyBitsLLC/upjet/v2/pkg/types/markers/kubebuilder"
+	"github.com/HolyBitsLLC/upjet/v2/pkg/types/structtag"
 )
 
 // A ListType is a type of list.

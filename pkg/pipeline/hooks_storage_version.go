@@ -12,7 +12,7 @@ import (
 
 	"github.com/crossplane/crossplane-runtime/v2/pkg/errors"
 
-	"github.com/crossplane/upjet/v2/pkg/config"
+	"github.com/HolyBitsLLC/upjet/v2/pkg/config"
 )
 
 // newStorageVersionMarkerUpdateHook returns a postGenerationHook that updates

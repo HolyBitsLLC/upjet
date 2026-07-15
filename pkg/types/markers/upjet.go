@@ -10,7 +10,7 @@ import (
 
 	"github.com/crossplane/crossplane-runtime/v2/pkg/errors"
 
-	"github.com/crossplane/upjet/v2/pkg/types/structtag"
+	"github.com/HolyBitsLLC/upjet/v2/pkg/types/structtag"
 )
 
 const (
