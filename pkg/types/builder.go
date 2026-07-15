@@ -15,9 +15,9 @@ import (
 	"github.com/pkg/errors"
 	"k8s.io/utils/ptr"
 
-	"github.com/HolyBitsLLC/upjet/pkg/config"
-	"github.com/HolyBitsLLC/upjet/pkg/schema/traverser"
-	conversiontfjson "github.com/HolyBitsLLC/upjet/pkg/types/conversion/tfjson"
+	"github.com/crossplane/upjet/v2/pkg/config"
+	"github.com/crossplane/upjet/v2/pkg/schema/traverser"
+	conversiontfjson "github.com/crossplane/upjet/v2/pkg/types/conversion/tfjson"
 )
 
 const (

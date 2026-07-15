@@ -16,8 +16,8 @@ import (
 	k8sExec "k8s.io/utils/exec"
 	testingexec "k8s.io/utils/exec/testing"
 
-	"github.com/HolyBitsLLC/upjet/pkg/resource/json"
-	tferrors "github.com/HolyBitsLLC/upjet/pkg/terraform/errors"
+	"github.com/crossplane/upjet/v2/pkg/resource/json"
+	tferrors "github.com/crossplane/upjet/v2/pkg/terraform/errors"
 )
 
 var (

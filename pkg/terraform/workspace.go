@@ -18,10 +18,10 @@ import (
 	"github.com/spf13/afero"
 	k8sExec "k8s.io/utils/exec"
 
-	"github.com/HolyBitsLLC/upjet/pkg/metrics"
-	"github.com/HolyBitsLLC/upjet/pkg/resource"
-	"github.com/HolyBitsLLC/upjet/pkg/resource/json"
-	tferrors "github.com/HolyBitsLLC/upjet/pkg/terraform/errors"
+	"github.com/crossplane/upjet/v2/pkg/metrics"
+	"github.com/crossplane/upjet/v2/pkg/resource"
+	"github.com/crossplane/upjet/v2/pkg/resource/json"
+	tferrors "github.com/crossplane/upjet/v2/pkg/terraform/errors"
 )
 
 const (

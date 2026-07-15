@@ -22,7 +22,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
-	"github.com/HolyBitsLLC/upjet/apis/configuration/v1alpha1"
+	"github.com/crossplane/upjet/v2/apis/configuration/v1alpha1"
 )
 
 const (

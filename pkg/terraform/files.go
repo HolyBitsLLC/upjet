@@ -19,9 +19,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/afero"
 
-	"github.com/HolyBitsLLC/upjet/pkg/config"
-	"github.com/HolyBitsLLC/upjet/pkg/resource"
-	"github.com/HolyBitsLLC/upjet/pkg/resource/json"
+	"github.com/crossplane/upjet/v2/pkg/config"
+	"github.com/crossplane/upjet/v2/pkg/resource"
+	"github.com/crossplane/upjet/v2/pkg/resource/json"
 )
 
 const (

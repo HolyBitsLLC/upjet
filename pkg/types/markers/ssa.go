@@ -7,7 +7,7 @@ package markers
 import (
 	"fmt"
 
-	"github.com/HolyBitsLLC/upjet/pkg/config"
+	"github.com/crossplane/upjet/v2/pkg/config"
 )
 
 // ServerSideApplyOptions represents the server-side apply merge options that

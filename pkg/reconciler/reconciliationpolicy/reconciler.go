@@ -16,7 +16,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
-	"github.com/HolyBitsLLC/upjet/pkg/internal/ratelimiter"
+	"github.com/crossplane/upjet/v2/pkg/internal/ratelimiter"
 )
 
 const (

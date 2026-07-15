@@ -16,12 +16,12 @@ import (
 	"github.com/pkg/errors"
 	"k8s.io/utils/ptr"
 
-	"github.com/HolyBitsLLC/upjet/pkg"
-	"github.com/HolyBitsLLC/upjet/pkg/config"
-	"github.com/HolyBitsLLC/upjet/pkg/schema/traverser"
-	"github.com/HolyBitsLLC/upjet/pkg/types/comments"
-	"github.com/HolyBitsLLC/upjet/pkg/types/name"
-	"github.com/HolyBitsLLC/upjet/pkg/types/structtag"
+	"github.com/crossplane/upjet/v2/pkg"
+	"github.com/crossplane/upjet/v2/pkg/config"
+	"github.com/crossplane/upjet/v2/pkg/schema/traverser"
+	"github.com/crossplane/upjet/v2/pkg/types/comments"
+	"github.com/crossplane/upjet/v2/pkg/types/name"
+	"github.com/crossplane/upjet/v2/pkg/types/structtag"
 )
 
 const (

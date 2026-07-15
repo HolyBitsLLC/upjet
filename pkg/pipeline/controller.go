@@ -12,7 +12,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/errors"
 	"github.com/muvaf/typewriter/pkg/wrapper"
 
-	"github.com/HolyBitsLLC/upjet/pkg/config"
+	"github.com/crossplane/upjet/v2/pkg/config"
 )
 
 // NewControllerGenerator returns a new ControllerGenerator.

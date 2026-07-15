@@ -10,7 +10,7 @@ import (
 
 	"github.com/crossplane/crossplane-runtime/v2/pkg/errors"
 
-	"github.com/HolyBitsLLC/upjet/pkg/config"
+	"github.com/crossplane/upjet/v2/pkg/config"
 )
 
 // postGenerationHook is invoked after the entire code generation pipeline completes.

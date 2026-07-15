@@ -20,11 +20,11 @@ import (
 	"github.com/pkg/errors"
 	"sigs.k8s.io/yaml"
 
-	"github.com/HolyBitsLLC/upjet/pkg/config"
-	"github.com/HolyBitsLLC/upjet/pkg/registry/reference"
-	"github.com/HolyBitsLLC/upjet/pkg/resource/json"
-	tjtypes "github.com/HolyBitsLLC/upjet/pkg/types"
-	"github.com/HolyBitsLLC/upjet/pkg/types/name"
+	"github.com/crossplane/upjet/v2/pkg/config"
+	"github.com/crossplane/upjet/v2/pkg/registry/reference"
+	"github.com/crossplane/upjet/v2/pkg/resource/json"
+	tjtypes "github.com/crossplane/upjet/v2/pkg/types"
+	"github.com/crossplane/upjet/v2/pkg/types/name"
 )
 
 var (

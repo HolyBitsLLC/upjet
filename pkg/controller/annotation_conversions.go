@@ -13,10 +13,10 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/errors"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/fieldpath"
 
-	"github.com/HolyBitsLLC/upjet/pkg/config"
-	"github.com/HolyBitsLLC/upjet/pkg/config/conversion"
-	"github.com/HolyBitsLLC/upjet/pkg/resource"
-	"github.com/HolyBitsLLC/upjet/pkg/types/name"
+	"github.com/crossplane/upjet/v2/pkg/config"
+	"github.com/crossplane/upjet/v2/pkg/config/conversion"
+	"github.com/crossplane/upjet/v2/pkg/resource"
+	"github.com/crossplane/upjet/v2/pkg/types/name"
 )
 
 // mergeAnnotationFieldsWithSpec merges field values stored in annotations back into
