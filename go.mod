@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: CC0-1.0
 
-module github.com/crossplane/upjet/v2
+module github.com/HolyBitsLLC/upjet
 
 go 1.25.8
 

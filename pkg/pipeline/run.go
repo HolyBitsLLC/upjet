@@ -13,10 +13,10 @@ import (
 
 	"github.com/crossplane/crossplane-runtime/v2/pkg/errors"
 
-	"github.com/crossplane/upjet/v2/pkg/config"
-	"github.com/crossplane/upjet/v2/pkg/examples"
-	"github.com/crossplane/upjet/v2/pkg/pipeline/templates"
-	tjtypes "github.com/crossplane/upjet/v2/pkg/types"
+	"github.com/HolyBitsLLC/upjet/pkg/config"
+	"github.com/HolyBitsLLC/upjet/pkg/examples"
+	"github.com/HolyBitsLLC/upjet/pkg/pipeline/templates"
+	tjtypes "github.com/HolyBitsLLC/upjet/pkg/types"
 )
 
 type terraformedInput struct {

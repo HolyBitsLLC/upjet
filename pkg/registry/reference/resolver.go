@@ -13,9 +13,9 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/fieldpath"
 	"github.com/pkg/errors"
 
-	"github.com/crossplane/upjet/v2/pkg/config"
-	"github.com/crossplane/upjet/v2/pkg/registry"
-	"github.com/crossplane/upjet/v2/pkg/resource/json"
+	"github.com/HolyBitsLLC/upjet/pkg/config"
+	"github.com/HolyBitsLLC/upjet/pkg/registry"
+	"github.com/HolyBitsLLC/upjet/pkg/resource/json"
 )
 
 const (

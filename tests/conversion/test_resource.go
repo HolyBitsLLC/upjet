@@ -10,7 +10,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
-	"github.com/crossplane/upjet/v2/pkg/resource"
+	"github.com/HolyBitsLLC/upjet/pkg/resource"
 )
 
 // TestResource is a minimal Terraformed resource for testing conversions.

@@ -7,9 +7,9 @@ package comments
 import (
 	"strings"
 
-	"github.com/crossplane/upjet/v2/pkg/config"
-	"github.com/crossplane/upjet/v2/pkg/types/markers"
-	"github.com/crossplane/upjet/v2/pkg/types/structtag"
+	"github.com/HolyBitsLLC/upjet/pkg/config"
+	"github.com/HolyBitsLLC/upjet/pkg/types/markers"
+	"github.com/HolyBitsLLC/upjet/pkg/types/structtag"
 )
 
 // Option is a comment option

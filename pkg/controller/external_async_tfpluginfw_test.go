@@ -15,8 +15,8 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/crossplane/upjet/v2/pkg/config"
-	"github.com/crossplane/upjet/v2/pkg/terraform"
+	"github.com/HolyBitsLLC/upjet/pkg/config"
+	"github.com/HolyBitsLLC/upjet/pkg/terraform"
 )
 
 func prepareTerraformPluginFrameworkAsyncExternal(testConfig testConfiguration, fns CallbackFns) *terraformPluginFrameworkAsyncExternalClient {

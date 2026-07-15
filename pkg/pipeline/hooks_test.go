@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"github.com/crossplane/upjet/v2/pkg/config"
+	"github.com/HolyBitsLLC/upjet/pkg/config"
 )
 
 // Helper function to verify marker position in the file

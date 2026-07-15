@@ -7,7 +7,7 @@ package config
 import (
 	"github.com/pkg/errors"
 
-	"github.com/crossplane/upjet/v2/pkg/resource/json"
+	"github.com/HolyBitsLLC/upjet/pkg/resource/json"
 )
 
 const (

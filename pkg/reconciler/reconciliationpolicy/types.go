@@ -12,8 +12,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/crossplane/upjet/v2/apis/configuration/v1alpha1"
-	"github.com/crossplane/upjet/v2/pkg/internal/ratelimiter"
+	"github.com/HolyBitsLLC/upjet/apis/configuration/v1alpha1"
+	"github.com/HolyBitsLLC/upjet/pkg/internal/ratelimiter"
 )
 
 // Source represents a configuration source for reconciliation policies.

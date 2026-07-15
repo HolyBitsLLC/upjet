@@ -15,9 +15,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/pkg/errors"
 
-	"github.com/crossplane/upjet/v2/pkg/registry"
-	"github.com/crossplane/upjet/v2/pkg/schema/traverser"
-	conversiontfjson "github.com/crossplane/upjet/v2/pkg/types/conversion/tfjson"
+	"github.com/HolyBitsLLC/upjet/pkg/registry"
+	"github.com/HolyBitsLLC/upjet/pkg/schema/traverser"
+	conversiontfjson "github.com/HolyBitsLLC/upjet/pkg/types/conversion/tfjson"
 )
 
 const (

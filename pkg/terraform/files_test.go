@@ -22,11 +22,11 @@ import (
 	"github.com/spf13/afero"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/crossplane/upjet/v2/pkg/config"
-	"github.com/crossplane/upjet/v2/pkg/resource"
-	"github.com/crossplane/upjet/v2/pkg/resource/fake"
-	"github.com/crossplane/upjet/v2/pkg/resource/fake/mocks"
-	"github.com/crossplane/upjet/v2/pkg/resource/json"
+	"github.com/HolyBitsLLC/upjet/pkg/config"
+	"github.com/HolyBitsLLC/upjet/pkg/resource"
+	"github.com/HolyBitsLLC/upjet/pkg/resource/fake"
+	"github.com/HolyBitsLLC/upjet/pkg/resource/fake/mocks"
+	"github.com/HolyBitsLLC/upjet/pkg/resource/json"
 )
 
 const (

@@ -7,7 +7,7 @@ package markers
 import (
 	"fmt"
 
-	"github.com/crossplane/upjet/v2/pkg/config"
+	"github.com/HolyBitsLLC/upjet/pkg/config"
 )
 
 const (
