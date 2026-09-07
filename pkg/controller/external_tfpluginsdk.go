@@ -10,12 +10,12 @@ import (
 	"strings"
 	"time"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/fieldpath"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/reconciler/managed"
 	xpresource "github.com/crossplane/crossplane-runtime/v2/pkg/resource"
+	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/hashicorp/go-cty/cty"
 	tfdiag "github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -328,7 +328,7 @@ func (c *TerraformPluginSDKConnector) Connect(ctx context.Context, mg xpresource
 	}, nil
 }
 
-func filterInitExclusiveDiffs(tr resource.Terraformed, instanceDiff *tf.InstanceDiff) error { //nolint:gocyclo
+func filterInitExclusiveDiffs(tr resource.Terraformed, instanceDiff *tf.InstanceDiff, cfg *config.Resource) error { //nolint:gocyclo
 	if instanceDiff == nil || instanceDiff.Empty() {
 		return nil
 	}
@@ -337,9 +337,17 @@ func filterInitExclusiveDiffs(tr resource.Terraformed, instanceDiff *tf.Instance
 	if err != nil {
 		return errors.Wrap(err, "cannot get spec.forProvider parameters")
 	}
+	paramsForProvider, err = cfg.ApplyTFConversions(paramsForProvider, config.ToTerraform)
+	if err != nil {
+		return errors.Wrap(err, "cannot apply tf conversions to spec.forProvider parameters")
+	}
 	paramsInitProvider, err := tr.GetInitParameters()
 	if err != nil {
 		return errors.Wrap(err, "cannot get spec.initProvider parameters")
+	}
+	paramsInitProvider, err = cfg.ApplyTFConversions(paramsInitProvider, config.ToTerraform)
+	if err != nil {
+		return errors.Wrap(err, "cannot apply tf conversions to spec.initProvider parameters")
 	}
 
 	initProviderExclusiveParamKeys := getTerraformIgnoreChanges(paramsForProvider, paramsInitProvider)
@@ -456,7 +464,7 @@ func (n *terraformPluginSDKExternal) getResourceDataDiff(tr resource.Terraformed
 	}
 
 	if resourceExists {
-		if err := filterInitExclusiveDiffs(tr, instanceDiff); err != nil {
+		if err := filterInitExclusiveDiffs(tr, instanceDiff, n.config); err != nil {
 			return nil, errors.Wrap(err, "failed to filter the diffs exclusive to spec.initProvider in the terraform.InstanceDiff")
 		}
 	}
@@ -508,6 +516,22 @@ func (n *terraformPluginSDKExternal) Observe(ctx context.Context, mg xpresource.
 	n.opTracker.SetTfState(newState) // TODO: missing RawConfig & RawPlan here...
 	resourceExists := newState != nil && newState.ID != ""
 
+	// If the managed resource has an external-name annotation set, the
+	// resource was imported or already exists externally. Even if
+	// RefreshWithoutUpgrade couldn't find it (e.g., due to format
+	// differences or temporary API issues), we should treat it as
+	// existing to avoid attempting to create a duplicate resource.
+	if !resourceExists && meta.GetExternalName(mg) != "" {
+		n.logger.Debug("Resource has external-name annotation, treating as existing even though RefreshWithoutUpgrade did not find it")
+		// Use the pre-refresh state as the observed state. This state
+		// was reconstructed from the spec parameters and has the
+		// external-name as its ID.
+		newState = diffState
+		resourceExists = newState != nil && newState.ID != ""
+		// Save the reconstructed state so it persists across reconciliations.
+		n.opTracker.SetTfState(diffState)
+	}
+
 	var stateValueMap map[string]any
 	if resourceExists {
 		jsonMap, stateValue, err := n.fromInstanceStateToJSONMap(newState)
@@ -536,8 +560,8 @@ func (n *terraformPluginSDKExternal) Observe(ctx context.Context, mg xpresource.
 	}
 
 	n.instanceDiff = nil
-	policySet := sets.New[xpv1.ManagementAction](mg.(resource.Terraformed).GetManagementPolicies()...)
-	observeOnlyPolicy := sets.New(xpv1.ManagementActionObserve)
+	policySet := sets.New[xpv2.ManagementAction](mg.(resource.Terraformed).GetManagementPolicies()...)
+	observeOnlyPolicy := sets.New(xpv2.ManagementActionObserve)
 	isObserveOnlyPolicy := policySet.Equal(observeOnlyPolicy)
 	if !isObserveOnlyPolicy || !n.isManagementPoliciesEnabled {
 		n.instanceDiff, err = n.getResourceDataDiff(mg.(resource.Terraformed), ctx, diffState, resourceExists)
@@ -559,11 +583,11 @@ func (n *terraformPluginSDKExternal) Observe(ctx context.Context, mg xpresource.
 	var connDetails managed.ConnectionDetails
 	specUpdateRequired := false
 	if resourceExists {
-		if mg.GetCondition(xpv1.TypeReady).Status == corev1.ConditionUnknown ||
-			mg.GetCondition(xpv1.TypeReady).Status == corev1.ConditionFalse {
+		if mg.GetCondition(xpv2.TypeReady).Status == corev1.ConditionUnknown ||
+			mg.GetCondition(xpv2.TypeReady).Status == corev1.ConditionFalse {
 			addTTR(mg)
 		}
-		mg.SetConditions(xpv1.Available())
+		mg.SetConditions(xpv2.Available())
 
 		// we get the connection details from the observed state before
 		// the conversion because the sensitive paths assume the native Terraform
@@ -582,7 +606,7 @@ func (n *terraformPluginSDKExternal) Observe(ctx context.Context, mg xpresource.
 			return managed.ExternalObservation{}, errors.Wrap(err, "cannot marshal the attributes of the new state for late-initialization")
 		}
 
-		policyHasLateInit := policySet.HasAny(xpv1.ManagementActionLateInitialize, xpv1.ManagementActionAll)
+		policyHasLateInit := policySet.HasAny(xpv2.ManagementActionLateInitialize, xpv2.ManagementActionAll)
 		if policyHasLateInit {
 			specUpdateRequired, err = mg.(resource.Terraformed).LateInitialize(buff)
 			if err != nil {
@@ -650,6 +674,14 @@ func (n *terraformPluginSDKExternal) setExternalName(mg xpresource.Managed, stat
 
 func (n *terraformPluginSDKExternal) Create(ctx context.Context, mg xpresource.Managed) (managed.ExternalCreation, error) { //nolint:gocyclo // easier to follow as a unit
 	n.logger.Debug("Creating the external resource")
+	// If the managed resource already has an external-name annotation set,
+	// it means the external resource already exists (e.g., was imported).
+	// Skip the Create to avoid attempting to create a duplicate resource.
+	if meta.GetExternalName(mg) != "" {
+		n.logger.Debug("Resource already has an external-name, skipping create")
+		return managed.ExternalCreation{}, nil
+	}
+
 	start := time.Now()
 	newState, diag := n.resourceSchema.Apply(ctx, n.opTracker.GetTfState(), n.instanceDiff, n.ts.Meta)
 	metrics.ExternalAPITime.WithLabelValues("create").Observe(time.Since(start).Seconds())

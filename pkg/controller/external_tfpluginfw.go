@@ -14,11 +14,11 @@ import (
 	"strings"
 	"time"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/reconciler/managed"
 	xpresource "github.com/crossplane/crossplane-runtime/v2/pkg/resource"
+	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	fwprovider "github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	fwresource "github.com/hashicorp/terraform-plugin-framework/resource"
@@ -357,14 +357,51 @@ func (c *TerraformPluginFrameworkConnector) getResourceConfigTerraformValue(ctx 
 // when only computed attributes or not-specified argument diffs
 // exist in the raw diff and no actual diff exists in the
 // parametrizable attributes.
-func (n *terraformPluginFrameworkExternalClient) filteredDiffExists(rawDiff []tftypes.ValueDiff) bool {
+// Exceptions:
+//   - A diff where the prior value (Value2) is non-null and the
+//     planned value (Value1) is null, and the diff does not belong to
+//     an attribute which is computed-only or one of its ancestors is
+//     computed-only. Such a case is taken as a previously set value being
+//     unset and is thus, not filtered.
+func (n *terraformPluginFrameworkExternalClient) filteredDiffExists(ctx context.Context, rawDiff []tftypes.ValueDiff) bool {
 	filteredDiff := make([]tftypes.ValueDiff, 0)
 	for _, diff := range rawDiff {
+		// Keep diffs where the planned value is non-null and known.
 		if diff.Value1 != nil && diff.Value1.IsKnown() && !diff.Value1.IsNull() {
 			filteredDiff = append(filteredDiff, diff)
+			continue
 		}
+		// Check if a previously set value is now unset. If not,
+		// then it will be filtered out at this stage.
+		if diff.Value1 == nil || !diff.Value1.IsNull() || diff.Value2 == nil || diff.Value2.IsNull() {
+			continue
+		}
+		// Check if the attribute at diff path is computed-only, or
+		// if one of its ancestors is computed-only. If so, the diff
+		// will be filtered out at this stage.
+		if n.isUnderComputedOnlyAttribute(ctx, diff.Path) {
+			continue
+		}
+		filteredDiff = append(filteredDiff, diff)
 	}
 	return len(filteredDiff) > 0
+}
+
+// isUnderComputedOnlyAttribute returns true if the attribute itself or
+// one of its ancestors is computed-only.
+func (n *terraformPluginFrameworkExternalClient) isUnderComputedOnlyAttribute(ctx context.Context, p *tftypes.AttributePath) bool {
+	for cur := p; cur != nil && len(cur.Steps()) > 0; cur = cur.WithoutLastStep() {
+		attr, err := n.resourceSchema.AttributeAtTerraformPath(ctx, cur)
+		if err != nil || attr == nil {
+			// Not an attribute, a block or an attribute without a schema, etc.
+			// Continue with its parent.
+			continue
+		}
+		if attr.IsComputed() && !attr.IsOptional() {
+			return true
+		}
+	}
+	return false
 }
 
 // getDiffPlanResponse calls the underlying native TF provider's PlanResourceChange RPC,
@@ -418,7 +455,7 @@ func (n *terraformPluginFrameworkExternalClient) getDiffPlanResponse(ctx context
 		n.plannedIdentity = planResponse.PlannedIdentity
 	}
 
-	return planResponse, n.filteredDiffExists(rawDiff), nil
+	return planResponse, n.filteredDiffExists(ctx, rawDiff), nil
 }
 
 // filterRequiresReplace checks the TF plan response for fields that require/force resource
@@ -618,6 +655,20 @@ func (n *terraformPluginFrameworkExternalClient) Observe(ctx context.Context, mg
 		} else {
 			stateValueMap = conv.(map[string]any)
 		}
+	} else if n.supportsIdentity() {
+		// For FW resources that use stub/placeholder identifiers
+		// in their external name, the initial Observe returns a
+		// "not-found" with nil TF state as expected, however they might
+		// return a non-empty TF identity with the placeholder identifier.
+		// Discard the TF identity for non-existent resource observations
+		// otherwise subsequent reconciles detect a superfluous TF identity
+		// change, failing the Observe.
+		//
+		// This also clears the TF identity for other not-found cases
+		// like resource was fully established but was deleted out-of-band.
+		// This is fine as Upjet in fact does not rely on TF resource
+		// identities and rehydrates them in subsequent reconciles
+		n.opTracker.SetFrameworkIdentity(nil)
 	}
 
 	// TODO(cem): Consider skipping diff calculation to avoid potential config
@@ -638,11 +689,11 @@ func (n *terraformPluginFrameworkExternalClient) Observe(ctx context.Context, mg
 	var connDetails managed.ConnectionDetails
 	specUpdateRequired := false
 	if resourceExists {
-		if mg.GetCondition(xpv1.TypeReady).Status == corev1.ConditionUnknown ||
-			mg.GetCondition(xpv1.TypeReady).Status == corev1.ConditionFalse {
+		if mg.GetCondition(xpv2.TypeReady).Status == corev1.ConditionUnknown ||
+			mg.GetCondition(xpv2.TypeReady).Status == corev1.ConditionFalse {
 			addTTR(mg)
 		}
-		mg.SetConditions(xpv1.Available())
+		mg.SetConditions(xpv2.Available())
 
 		// we get the connection details from the observed state before
 		// the conversion because the sensitive paths assume the native Terraform
@@ -662,8 +713,8 @@ func (n *terraformPluginFrameworkExternalClient) Observe(ctx context.Context, mg
 			return managed.ExternalObservation{}, errors.Wrap(err, "cannot marshal the attributes of the new state for late-initialization")
 		}
 
-		policySet := sets.New[xpv1.ManagementAction](mg.(resource.Terraformed).GetManagementPolicies()...)
-		policyHasLateInit := policySet.HasAny(xpv1.ManagementActionLateInitialize, xpv1.ManagementActionAll)
+		policySet := sets.New[xpv2.ManagementAction](mg.(resource.Terraformed).GetManagementPolicies()...)
+		policyHasLateInit := policySet.HasAny(xpv2.ManagementActionLateInitialize, xpv2.ManagementActionAll)
 		if policyHasLateInit {
 			specUpdateRequired, err = mg.(resource.Terraformed).LateInitialize(buff)
 			if err != nil {
@@ -742,9 +793,15 @@ func (n *terraformPluginFrameworkExternalClient) Create(ctx context.Context, mg 
 		// In the following reconciles, this helps to track the external
 		// resource, rather than try to recreate that might cause leaking.
 		n.opTracker.SetFrameworkTFState(applyResponse.NewState)
-		if n.supportsIdentity() {
-			n.opTracker.SetFrameworkIdentity(applyResponse.NewIdentity)
-		}
+		// note: do not store returned TF Framework Identity here.
+		// https://github.com/crossplane-contrib/provider-upjet-aws/issues/2135
+		// The returned TF identity might be partial/garbage (missing some fields).
+		// When subsequent observe recovers the resource via state, it detects an
+		// superfluous identity change garbage->valid and errors out.
+		//
+		// Instead, ignore the returned TF identity and let subsequent
+		// reconciliations rehydrate TF identity via state
+
 		return managed.ExternalCreation{}, errors.Wrap(fatalDiags, "resource creation call returned error diags")
 	}
 
